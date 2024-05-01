@@ -1,15 +1,21 @@
-FROM debian:buster
+FROM debian:bullseye
 
-RUN apt-get update && apt-get install -y nginx openssl
+RUN apt update &&\
+	apt upgrade -y &&\
+	apt install -y nginx\
+	openssl
+
+RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-selfsigned.crt -subj "/C=FR/L=Paris/O=42/CN=rel-fila.42.fr"
 
 EXPOSE 443
 
-COPY ./conf/default/ /etc/nginx/sites-enabled/default
-COPY ./tools/nginx_start.sh /var/www
+COPY conf/rel-fila_conf /etc/nginx/sites-available/
 
-RUN chmod +x /var/www/nginx_start.sh
+RUN ln -s /etc/nginx/sites-available/rel-fila_conf /etc/nginx/sites-enabled/ && \
+	unlink /etc/nginx/sites-enabled/default && \
+	mkdir /var/www/rel-fila
 
-ENTRYPOINT ["var/www/nginx_start.sh"]
+RUN chmod 755 /var/www/rel-fila
+RUN chown -R www-data:www-data /var/www/rel-fila
 
-CMD ["nginx", "-g", "daemon off;"]
-
+ENTRYPOINT ["nginx", "-g", "daemon off;"]

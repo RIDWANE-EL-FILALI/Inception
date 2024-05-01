@@ -11,8 +11,11 @@ re:
 	@docker-compose -f srcs/docker-compose.yml up --build
 
 clean:
-	@docker system prune -af \
-	rm -rf $(HOME)/data/wordpress
-	rm -rf $(HOME)/data/mariadb
+	@docker system prune -af
+	@docker volume rm wp db
+
+fclean:
+	@sudo rm -rf $(HOME)/data/wordpress
+	@sudo rm -rf $(HOME)/data/mariadb
 
 .PHONY: all re down clean

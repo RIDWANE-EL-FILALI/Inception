@@ -1,14 +1,23 @@
-FROM debian:buster
+FROM debian:bullseye
 
-RUN apt-get update && apt-get -y install php7.3 php-mysqli php-fpm wget
+RUN apt update &&\
+	apt upgrade -y &&\
+    apt install -y php7.4 \
+                    php-fpm \
+                    php-mysql \
+                    mariadb-client \
+                    curl
 
 EXPOSE 9000
 
-COPY ./conf/www.conf /etc/php/7.3/fpm/pool.d
-COPY ./tools /var/www/
+COPY conf/www.conf /etc/php/7.4/fpm/pool.d/
 
-RUN chmod +x /var/www/wordpress_start.sh
+RUN mkdir -p /var/www/rel-fila/wordpress
 
-ENTRYPOINT [ "/var/www/wordpress_start.sh" ]
+RUN mkdir /run/php/
 
-CMD ["/usr/sbin/php-fpm7.3", "--nodaemonize"]
+COPY conf/conf.sh /
+
+RUN	chown -R root:root /var/www/rel-fila/wordpress/
+
+ENTRYPOINT ["sh", "/conf.sh"]
