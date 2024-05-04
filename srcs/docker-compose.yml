@@ -25,7 +25,7 @@ services:
     expose:
       - "9000"
     volumes:
-      - wp:/var/www/rel-fila
+      - wp:/var/www/rel-fila/wordpress
     env_file: .env
     restart: always
   
@@ -40,7 +40,7 @@ services:
     ports:
       - "443:443"
     volumes:
-      - wp:/var/www/rel-fila
+      - wp:/var/www/rel-fila/wordpress
     env_file: .env
     restart: always
 
@@ -51,12 +51,14 @@ networks:
 volumes:
   wp:
     driver: local
+    name: wp
     driver_opts:
       type: 'none'
       o: 'bind'
       device: '/$HOME/data/wordpress'
   db:
     driver: local
+    name: db
     driver_opts:
       type: 'none' 
       o: 'bind'
